@@ -1,0 +1,45 @@
+import {useEffect,useState} from "react";
+import {missions,endings,outcome,type Outcome} from "../game/attack-data";
+import {Scene,useTypewriter,beep} from "./Scene";
+import {homeBackground} from "../game/attack-images";
+type Phase="home"|"story"|"choice"|"reaction"|"end";
+type Save={phase:Phase;index:number;survival:number;trust:number;answers:number[]};
+const initial:Save={phase:"home",index:0,survival:50,trust:50,answers:[]};
+const key="game:attack-on-titan:v2",galleryKey="game:attack-on-titan:gallery";
+const clamp=(n:number)=>Math.max(0,Math.min(100,n));
+function Gauge({name,value,color}:{name:string;value:number;color:string}){return <div className="border border-[#707b6c] bg-[#273029]/90 p-2"><div className="mb-1 flex justify-between text-xs"><span>{name}</span><b>{value}/100</b></div><div className="h-2 bg-[#111713]"><div className="h-full transition-all duration-700" style={{width:value+"%",background:color}}/></div></div>}
+const reviews=(s:Save)=>[
+{name:"리바이",text:s.survival>=80?"살아남는 것도 실력이다. 그 판단을 유지해라.":"운에만 기대서는 오래 살아남지 못한다."},
+{name:"엘빈",text:s.answers[8]===1?"위험을 계산하며 임무를 수행했다. 좋은 판단이었다.":"결정에는 반드시 대가가 따른다. 그것을 잊지 말게."},
+{name:"미카사",text:s.trust>=80?"동료를 지키려 했다는 걸 알아. 고마워.":"다음에는 주변 사람들의 위치도 살펴줘."},
+{name:"아르민",text:s.answers[7]===1?"지형을 활용한 선택이 모두에게 도움이 됐어.":"다른 방법도 있었을 거야. 다음엔 함께 생각해 보자."}
+];
+export function AttackGame(){
+ const [s,setS]=useState<Save>(initial),[loaded,setLoaded]=useState(false),[gallery,setGallery]=useState<Outcome[]>([]),[showGallery,setShowGallery]=useState(false),[showReviews,setShowReviews]=useState(false),[muted,setMuted]=useState(false);
+ useEffect(()=>{try{const raw=localStorage.getItem(key);if(raw){const saved=JSON.parse(raw) as Save;if(saved&&Array.isArray(saved.answers)&&saved.index>=0&&saved.index<=missions.length)setS(saved)}const g=JSON.parse(localStorage.getItem(galleryKey)||"[]");if(Array.isArray(g))setGallery(g.filter((v):v is Outcome=>typeof v==="string"&&v in endings));setMuted(localStorage.getItem("aot:muted")==="1")}catch{}setLoaded(true)},[]);
+ useEffect(()=>{if(loaded)try{localStorage.setItem(key,JSON.stringify(s))}catch{}},[loaded,s]);
+ useEffect(()=>{if(loaded)try{localStorage.setItem("aot:muted",muted?"1":"0")}catch{}},[muted,loaded]);
+ const result=outcome(s.survival,s.trust,s.answers[9]??-1);
+ useEffect(()=>{if(!loaded||s.phase!=="end")return;setGallery(prev=>{if(prev.includes(result))return prev;const next=[...prev,result];try{localStorage.setItem(galleryKey,JSON.stringify(next))}catch{}return next})},[loaded,s.phase,result]);
+ const q=missions[Math.min(s.index,missions.length-1)]!,last=s.answers[s.answers.length-1]??0;
+ const dialogue=s.phase==="story"?q.story:s.phase==="reaction"?q.choices[last]?.reaction??"":s.phase==="end"?endings[result].description:"";
+ const typed=useTypewriter(dialogue);
+ const sound=(kind:"click"|"good"|"bad"="click")=>beep(kind,muted);
+ const start=()=>{sound();setS({...initial,phase:"story"});setShowGallery(false);setShowReviews(false)};
+ const pick=(i:number)=>{if(s.phase!=="choice")return;const c=q.choices[i]!;sound(c.survival+c.trust>=0?"good":"bad");setS(p=>({...p,phase:"reaction",answers:[...p.answers,i],survival:clamp(p.survival+c.survival),trust:clamp(p.trust+c.trust)}))};
+ const next=()=>{sound();if(!typed.done){typed.finish();return}if(s.phase==="story"){setS(p=>({...p,phase:"choice"}));return}if(s.phase==="reaction"){setS(p=>({...p,index:p.index+1,phase:p.index===missions.length-1?"end":"story"}))}};
+ const Gallery=()=> <div className="mt-5 grid gap-3 text-left sm:grid-cols-2">{(Object.keys(endings) as Outcome[]).map(k=><div key={k} className="border border-[#707b6c] bg-[#283229] p-4"><b>{gallery.includes(k)?endings[k].title:"??? 잠긴 엔딩"}</b><p className="mt-2 text-sm text-[#c0bba8]">{gallery.includes(k)?endings[k].subtitle:"다른 선택으로 해금"}</p></div>)}</div>;
+ if(!loaded)return <main className="min-h-screen bg-[#151a17]"/>;
+ return <main className="aot-app bg-[#151a17] font-sans text-[#e9e3d4]"><div className="aot-shell mx-auto max-w-6xl">
+ <header className="mb-3 flex items-center justify-between gap-2 border-b border-[#89937b]/40 pb-3"><span className="text-sm font-bold tracking-widest text-[#c5b99d]">⚔ 조사병단 생존 시뮬레이션</span><button onClick={()=>setMuted(m=>!m)} className="border border-[#778475] px-3 py-1 text-xs">{muted?"🔇 음소거":"🔊 소리 켜짐"}</button></header>
+ {s.phase==="home"?<section className="aot-home mx-auto max-w-3xl text-center"><p className="mb-4 text-xs tracking-[.35em] text-[#b9a982]">WALL MARIA / EXPEDITION REPORT</p><h1 className="font-display text-5xl md:text-7xl">진격의 거인</h1><p className="my-5 text-xl text-[#d2c7ae]">당신의 조사병단 생존 확률은?</p><div className="aot-hero" style={{backgroundImage:`linear-gradient(#0008,#000a),url(${homeBackground})`,backgroundSize:"cover",backgroundPosition:"center"}}>⚔<span>자유를 위해, 벽 밖으로.</span></div><p className="mx-auto mt-7 max-w-xl leading-8 text-[#c5c8bf]">조사병단 신입 병사가 된 당신은 벽 밖에서 열 가지 선택을 마주한다. 살아남기 위해 무엇을 포기할 수 있는가?</p><div className="mt-8 flex flex-wrap justify-center gap-3"><button onClick={start} className="aot-primary">조사병단 입단하기</button><button onClick={()=>setShowGallery(v=>!v)} className="aot-outline">엔딩 컬렉션 {gallery.length}/4</button></div>{showGallery&&<Gallery/>}</section>:
+ s.phase==="end"?<section className="mx-auto max-w-3xl text-center"><p className="text-sm tracking-[.35em] text-[#b9a982]">EXPEDITION COMPLETE</p><h2 className="mt-5 font-display text-4xl md:text-5xl">{endings[result].title}</h2><p className="my-4 text-xl text-[#d4c6a4]">{endings[result].subtitle}</p><Scene index={9} speaker="리바이"><div className="aot-speaker">작전 결과</div><p className="aot-line">{typed.shown}</p><button onClick={()=>typed.finish()} className="aot-next">{typed.done?"작전 종료":"대사 전체 보기"} ▸</button></Scene><div className="mt-5 grid grid-cols-2 gap-3"><Gauge name="생존 가능성" value={s.survival} color="#b66b57"/><Gauge name="동료 신뢰도" value={s.trust} color="#9cad8a"/></div><div className="mt-7 flex flex-wrap justify-center gap-3"><button onClick={()=>setShowReviews(v=>!v)} className="aot-primary">캐릭터 평가 {showReviews?"닫기":"보기"}</button><button onClick={()=>setShowGallery(v=>!v)} className="aot-outline">엔딩 컬렉션</button><button onClick={start} className="aot-outline">다시 도전</button></div>{showReviews&&<div className="mt-6 grid gap-3 text-left sm:grid-cols-2">{reviews(s).map(r=><div key={r.name} className="border border-[#707b6c] bg-[#242c27] p-4"><b className="text-[#d4c6a4]">{r.name}</b><p className="mt-2 text-sm leading-6">{r.text}</p></div>)}</div>}{showGallery&&<Gallery/>}</section>:
+ <section><div className="mb-3 flex items-center justify-between gap-3 text-xs tracking-widest text-[#d4c6a4]"><span>MISSION {String(s.index+1).padStart(2,"0")} / 10</span><span>{q.place}</span></div><div className="mb-3 grid grid-cols-2 gap-3"><Gauge name="생존 가능성" value={s.survival} color="#b66b57"/><Gauge name="동료 신뢰도" value={s.trust} color="#9cad8a"/></div>
+ <Scene index={s.index} speaker={s.phase==="reaction"?(q.choices[last]?.reaction.split(":")[0]||q.speaker):q.speaker} mood={s.phase==="reaction"?(q.choices[last]?.survival??0)<0?"bad":"good":"neutral"}>
+ <div className="aot-speaker">{s.phase==="reaction"?"선택의 결과":q.speaker} <span> / {q.title}</span></div>
+ {s.phase==="story"?<button onClick={next} className="aot-dialogue-button"><p className="aot-line">{typed.shown}<span className="aot-caret">▍</span></p><span className="aot-next">{typed.done?"선택지 보기":"계속"} ▸</span></button>:
+ s.phase==="choice"?<div><p className="mb-3 text-sm text-[#d8c9a6]">당신은 어떻게 행동할 것인가?</p><div className="grid gap-2">{q.choices.map((c,i)=><button key={i} onClick={()=>pick(i)} className="aot-choice"><b>{"ABC"[i]}</b>{c.label}</button>)}</div></div>:
+ <button onClick={next} className="aot-dialogue-button"><p className="aot-line">{typed.shown}<span className="aot-caret">▍</span></p><span className="aot-next">{typed.done?(s.index===9?"최종 결과 보기":"다음 임무"):"계속"} ▸</span></button>}
+ </Scene></section>}
+ </div></main>
+}
