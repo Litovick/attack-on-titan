@@ -30,6 +30,8 @@
  */
 
 @theme inline {
+  --font-display: "Black Han Sans", "Noto Sans KR", sans-serif;
+  --font-sans: "Noto Sans KR", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
