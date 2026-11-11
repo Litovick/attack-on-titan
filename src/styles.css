@@ -312,3 +312,39 @@
   .aot-gallery-header{align-items:flex-start}
 }
 @media(prefers-reduced-motion:reduce){.aot-active{animation:none}}
+
+/* Dedicated main menu: distinct from the expedition scene */
+.aot-menu{
+  position:relative;isolation:isolate;overflow:auto;
+  width:100%;min-height:0;
+  background-color:#101b16;background-position:center;background-size:cover;
+  border:1px solid #677363;
+  box-shadow:inset 0 0 0 7px #0b120f55;
+  padding:clamp(20px,4vw,48px);
+  justify-content:space-between;
+}
+.aot-menu::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 75% 45%,transparent 20%,#07100dcc 100%)}
+.aot-menu-top,.aot-menu-bottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#d0b789;font-size:10px;letter-spacing:.28em}
+.aot-menu-content{width:min(100%,610px);margin:auto 0;padding:24px 0}
+.aot-menu-eyebrow{color:#e4c68b;font-size:12px;letter-spacing:.24em;margin-bottom:14px}
+.aot-menu-title{font-family:var(--font-display);font-size:clamp(68px,11vw,144px);line-height:.98;letter-spacing:-.055em;color:#f0e8d5;text-shadow:0 5px 24px #000a}
+.aot-menu-title span{color:#d5c7a5}
+.aot-menu-rule{height:3px;width:84px;background:#a85846;margin:28px 0 22px}
+.aot-menu-subtitle{font-size:clamp(20px,2.6vw,31px);font-weight:800;color:#e4cda1}
+.aot-menu-description{margin-top:12px;color:#c9c9b9;line-height:1.9;font-size:clamp(13px,1.4vw,16px)}
+.aot-menu-actions{display:grid;gap:9px;max-width:430px;margin-top:30px}
+.aot-menu-actions button{min-height:52px;display:flex;align-items:center;gap:16px;text-align:left;padding:12px 18px;font-weight:700;transition:background .2s,transform .2s}
+.aot-menu-actions button:hover{transform:translateX(4px)}
+.aot-menu-actions button>span:first-child{font-size:11px;letter-spacing:.14em;opacity:.75}
+.aot-menu-start{background:#a65b48;color:#fff2dc}
+.aot-menu-start>span:last-child{margin-left:auto;font-size:20px}
+.aot-menu-option{background:#17231edc;border:1px solid #82917a;color:#e5ddc9}
+.aot-menu-option:hover{background:#2a3c30}
+.aot-menu-option small{margin-left:auto;color:#c2ad80;font-size:11px;font-weight:400}
+@media(max-width:600px){
+ .aot-menu{padding:20px;background-position:60% center}
+ .aot-menu-content{padding:30px 0}
+ .aot-menu-title{font-size:clamp(64px,17vw,100px)}
+ .aot-menu-top,.aot-menu-bottom{font-size:9px;letter-spacing:.12em}
+ .aot-menu-description br{display:none}
+}
