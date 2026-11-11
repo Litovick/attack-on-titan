@@ -21,7 +21,7 @@ export function AttackGame(){
  useEffect(()=>{if(loaded)try{localStorage.setItem("aot:muted",muted?"1":"0")}catch{}},[muted,loaded]);
  const result=outcome(s.survival,s.trust,s.answers[9]??-1);
  useEffect(()=>{if(!loaded||s.phase!=="end")return;setGallery(prev=>{if(prev.includes(result))return prev;const next=[...prev,result];try{localStorage.setItem(galleryKey,JSON.stringify(next))}catch{}return next})},[loaded,s.phase,result]);
- const q=missions[Math.min(s.index,missions.length-1)],last=s.answers[s.answers.length-1];
+ const q=missions[Math.min(s.index,missions.length-1)]!,last=s.answers[s.answers.length-1];
  const dialogue=s.phase==="story"?q.story:s.phase==="reaction"?q.choices[last]?.reaction??"":s.phase==="end"?endings[result].description:"";
  const typed=useTypewriter(dialogue);
  const sound=(kind:"click"|"good"|"bad"="click")=>beep(kind,muted);
