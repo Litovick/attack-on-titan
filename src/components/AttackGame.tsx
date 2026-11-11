@@ -21,12 +21,12 @@ export function AttackGame(){
  useEffect(()=>{if(loaded)try{localStorage.setItem("aot:muted",muted?"1":"0")}catch{}},[muted,loaded]);
  const result=outcome(s.survival,s.trust,s.answers[9]??-1);
  useEffect(()=>{if(!loaded||s.phase!=="end")return;setGallery(prev=>{if(prev.includes(result))return prev;const next=[...prev,result];try{localStorage.setItem(galleryKey,JSON.stringify(next))}catch{}return next})},[loaded,s.phase,result]);
- const q=missions[Math.min(s.index,missions.length-1)]!,last=s.answers[s.answers.length-1];
+ const q=missions[Math.min(s.index,missions.length-1)]!,last=s.answers[s.answers.length-1]??0;
  const dialogue=s.phase==="story"?q.story:s.phase==="reaction"?q.choices[last]?.reaction??"":s.phase==="end"?endings[result].description:"";
  const typed=useTypewriter(dialogue);
  const sound=(kind:"click"|"good"|"bad"="click")=>beep(kind,muted);
  const start=()=>{sound();setS({...initial,phase:"story"});setShowGallery(false);setShowReviews(false)};
- const pick=(i:number)=>{if(s.phase!=="choice")return;const c=q.choices[i];sound(c.survival+c.trust>=0?"good":"bad");setS(p=>({...p,phase:"reaction",answers:[...p.answers,i],survival:clamp(p.survival+c.survival),trust:clamp(p.trust+c.trust)}))};
+ const pick=(i:number)=>{if(s.phase!=="choice")return;const c=q.choices[i]!;sound(c.survival+c.trust>=0?"good":"bad");setS(p=>({...p,phase:"reaction",answers:[...p.answers,i],survival:clamp(p.survival+c.survival),trust:clamp(p.trust+c.trust)}))};
  const next=()=>{sound();if(!typed.done){typed.finish();return}if(s.phase==="story"){setS(p=>({...p,phase:"choice"}));return}if(s.phase==="reaction"){setS(p=>({...p,index:p.index+1,phase:p.index===missions.length-1?"end":"story"}))}};
  const Gallery=()=> <div className="mt-5 grid gap-3 text-left sm:grid-cols-2">{(Object.keys(endings) as Outcome[]).map(k=><div key={k} className="border border-[#707b6c] bg-[#283229] p-4"><b>{gallery.includes(k)?endings[k].title:"??? 잠긴 엔딩"}</b><p className="mt-2 text-sm text-[#c0bba8]">{gallery.includes(k)?endings[k].subtitle:"다른 선택으로 해금"}</p></div>)}</div>;
  if(!loaded)return <main className="min-h-screen bg-[#151a17]"/>;
