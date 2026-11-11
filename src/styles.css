@@ -348,3 +348,32 @@
  .aot-menu-top,.aot-menu-bottom{font-size:9px;letter-spacing:.12em}
  .aot-menu-description br{display:none}
 }
+
+/* Illustrated ending archive and character reviews */
+.aot-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.aot-ending-card{min-width:0;border:1px solid #6f7b6b;background:#1b2821;overflow:hidden;text-align:left}
+.aot-ending-art{position:relative;aspect-ratio:16/8;overflow:hidden;background:#0b1511}
+.aot-ending-art img{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.82) saturate(.83)}
+.aot-ending-card--locked .aot-ending-art img{filter:blur(7px) brightness(.25) grayscale(.8);transform:scale(1.08)}
+.aot-ending-number{position:absolute;top:12px;left:14px;font-size:10px;letter-spacing:.22em;color:#e9d3a4;text-shadow:0 2px 5px #000}
+.aot-ending-lock{position:absolute;inset:0;display:grid;place-items:center;font-size:32px}
+.aot-ending-info{padding:16px 18px 20px}
+.aot-ending-info b{font-size:18px;color:#eee1c7}
+.aot-ending-info p{margin-top:7px;font-size:13px;color:#c0bba8}
+.aot-ending-info .aot-ending-description{line-height:1.7;color:#d4cdbb}
+.aot-review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:24px;text-align:left}
+.aot-review-card{min-width:0;display:flex;align-items:stretch;gap:12px;min-height:150px;overflow:hidden;background:#242c27;border:1px solid #707b6c}
+.aot-review-portrait{width:38%;min-width:100px;max-width:150px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(140deg,#34473a,#101a15);overflow:hidden}
+.aot-review-portrait img{display:block;width:100%;height:150px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 6px 7px #0008)}
+.aot-review-copy{padding:18px 12px 18px 0;align-self:center}
+.aot-review-copy b{color:#d4c6a4;font-size:17px}
+.aot-review-copy p{margin-top:9px;font-size:13px;line-height:1.75}
+@media(max-width:600px){
+ .aot-gallery-grid,.aot-review-grid{grid-template-columns:1fr;gap:12px}
+ .aot-ending-art{aspect-ratio:16/7}
+ .aot-ending-info{padding:12px 14px 15px}
+ .aot-review-card{min-height:125px}
+ .aot-review-portrait{min-width:100px;width:32%}
+ .aot-review-portrait img{height:130px}
+ .aot-review-copy{padding:12px 10px 12px 0}
+}
