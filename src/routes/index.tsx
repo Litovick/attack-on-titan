@@ -1,23 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { AttackGame } from "@/components/AttackGame";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "진격의 거인 — 조사병단 생존 시뮬레이션" },
+      { name: "description", content: "벽 밖 열 가지 선택으로 당신의 조사병단 생존 확률을 확인하세요." },
+      { property: "og:title", content: "진격의 거인 — 조사병단 생존 시뮬레이션" },
+      { property: "og:description", content: "벽 밖 열 가지 선택으로 당신의 조사병단 생존 확률을 확인하세요." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: AttackGame,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}

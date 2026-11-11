@@ -212,3 +212,8 @@
 .aot-location-7 .aot-backdrop img{object-position:65% center;filter:brightness(.45) hue-rotate(14deg)}
 .aot-location-8 .aot-backdrop img{object-position:45% center;filter:brightness(.33) sepia(.5)}
 .aot-location-9 .aot-backdrop img{object-position:55% center;filter:brightness(.48) saturate(.65)}
+/* Cinematic polish for generated scene art */
+.aot-backdrop img{filter:brightness(.62) saturate(.95)!important}
+.aot-location-3 .aot-backdrop img,.aot-location-6 .aot-backdrop img{filter:brightness(.55) saturate(.9)!important}
+.aot-stage.aot-shake::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:#b3301f;animation:aot-flash .45s ease-out forwards}
+@keyframes aot-flash{from{opacity:.45}to{opacity:0}}
